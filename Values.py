@@ -3,7 +3,7 @@ R = 0.386               # p.6 Moertsell 2021
 a_b = 0.71273           # p.6 Moertsell 2021
 sigma_a_b = 0.00176     # p.6 Moertsell 2021
 kappa = 2.7
-added_scatter = 0.068200# 0 or 0.0682, p.6 Moertsell 2021
+added_scatter = 0.0682  # 0 or 0.0682, p.6 Moertsell 2021
 
 # physics constant
 c = 299792.458

@@ -24,12 +24,10 @@ Save_Cepheids = Cepheids
 ######################## Simulations #########################
 ##############################################################
 
-### Normal simulations -> added dispersion = 0
-update_added_dispersion(0.0000)
+### Normal simulations -> added scatter = 0
 Hubble, Cepheids, Cepheids_Outliers = multi_run(Hubble, Save_Cepheids, Empty_Outliers,SN, galaxies, 'Normal')
 
 ### Added dispersion -> added dispersion = 0.0682
-update_added_dispersion(0.0682)
 Hubble, Cepheids, Cepheids_Outliers = multi_run(Hubble, Save_Cepheids, Empty_Outliers,SN, galaxies, 'Added_Dispersion')
 
 ### Final Hubble plot

@@ -1,10 +1,11 @@
 ###  Fit functions
 import numpy as np
 import pandas as pd
+import re
 from Values import *
 
 # Fit H0
-def find_H0(Cepheids: pd.DataFrame, SN: pd.DataFrame , galaxies: list, display_text: bool =False):  ### Moertsell 2021
+def find_H0(Cepheids: pd.DataFrame, SN: pd.DataFrame , galaxies: list, name:  str, display_text: bool =False):  ### Moertsell 2021
     ### Create y vector
     MW_filter = Cepheids['Gal'] == 'MW'
     y = np.array(Cepheids[MW_filter]['m_W'] - 10 + 5 * np.log10(Cepheids[MW_filter]['pi']))
@@ -55,11 +56,15 @@ def find_H0(Cepheids: pd.DataFrame, SN: pd.DataFrame , galaxies: list, display_t
             L[i][26] = 1
 
     ### Create the correlation matrix :
+    if name[:6] == 'Normal':
+        extra_scatter = 0.0 # extra scatter for the hosts cepheids
+    else :
+        extra_scatter = added_scatter
     sigma2_pi = Cepheids[MW_filter]['sig_m_W'] ** 2 \
                 + (5 / np.log(10) / Cepheids[MW_filter]['pi'] * Cepheids[MW_filter]['sig_pi']) ** 2
     diag_sigma = np.array(sigma2_pi)  # for MW
     diag_sigma = np.append(diag_sigma,
-                           Cepheids[~MW_filter]['sig_m_W'] ** 2 + added_scatter ** 2)  # for host, N4258 & LMC
+                           Cepheids[~MW_filter]['sig_m_W'] ** 2 + extra_scatter ** 2)  # for host, N4258 & LMC
     diag_sigma = np.append(diag_sigma, [sigma_N4258 ** 2, sigma_LMC ** 2])  # geometric distances
     diag_sigma = np.append(diag_sigma, SN['sig'] ** 2)
     C = np.diag(diag_sigma)
