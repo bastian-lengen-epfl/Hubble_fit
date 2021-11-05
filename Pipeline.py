@@ -3,10 +3,10 @@ from Errors_functions import *
 from Outliers_functions import *
 from Relativistics_functions import *
 
-def single_run(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, SN: pd.DataFrame,\
+def single_run_Cepheids(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, SN: pd.DataFrame,\
                galaxies: list, name: str, fig_dir: str = "./Figure"):
     # Run the fit
-    q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0(Cepheids, SN, galaxies, name, display_text=True)
+    q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_Cepheids(Cepheids, SN, galaxies, name, display_text=True)
 
     # Plot PL relations:
     plot_PL(Cepheids, Cepheids_Outliers, galaxies, q, name, fig_dir)
@@ -18,13 +18,13 @@ def single_run(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, SN: pd.D
 
     return [name, q, H_0, chi2, cov, y, L, sigma_H_0]
 
-def multi_run(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame,\
+def multi_run_Cepheids(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame,\
               SN: pd.DataFrame, galaxies: list, name: str, fig_dir: str = "./Figure"):
     ######### no outliers, no added dispersion, no relativistic corrections
     print('\n-------------------------------------\n%s\n-------------------------------------' % name)
 
     # Run the routine
-    Hubble.loc[len(Hubble)] = single_run(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
+    Hubble.loc[len(Hubble)] = single_run_Cepheids(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
 
     ######### outliers, no added dispersion, no relativistic corrections
 
@@ -36,7 +36,7 @@ def multi_run(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: 
     name, len(Cepheids_Outliers)))
 
     # Run the routine
-    Hubble.loc[len(Hubble)] = single_run(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
+    Hubble.loc[len(Hubble)] = single_run_Cepheids(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
 
     ######### outliers, RLB, no added dispersion, no K-correction
 
@@ -48,7 +48,7 @@ def multi_run(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: 
     name, len(Cepheids_Outliers)))
 
     # Run the routine
-    Hubble.loc[len(Hubble)] = single_run(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
+    Hubble.loc[len(Hubble)] = single_run_Cepheids(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
 
     # Distance plot before/after corrections
     RLB_galaxies_distance(Hubble.loc[Hubble.index[-2], 'q'], \
@@ -62,6 +62,13 @@ def multi_run(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: 
     # Correct the dataset (here m_W) for the k correction
     Cepheids = Kcorr(Cepheids)
 
-    Hubble.loc[len(Hubble)] = single_run(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
+    Hubble.loc[len(Hubble)] = single_run_Cepheids(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
 
     return Hubble, Cepheids, Cepheids_Outliers
+
+def run_TRGB(Hubble: pd. DataFrame ,TRGB: pd.DataFrame, SN: pd.DataFrame, galaxies: list):
+    # Run the fit
+    print('\n-------------------------------------\nTRGB\n-------------------------------------')
+    q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_TRGB(TRGB, SN, galaxies, display_text=True)
+    Hubble.loc[len(Hubble)] = ['TRGB',q, H_0, chi2, cov, y, L, sigma_H_0]
+    return Hubble

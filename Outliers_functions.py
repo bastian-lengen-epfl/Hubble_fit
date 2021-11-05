@@ -2,7 +2,7 @@ from Fit_functions import *
 
 def kappa_clipping(kappa: float, Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, SN: pd.DataFrame , galaxies: list, name: str, all_text: bool =False):
     # First iteration
-    q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0(Cepheids, SN, galaxies, name, all_text)
+    q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_Cepheids(Cepheids, SN, galaxies, name, all_text)
 
     # Initialize the algorithm
     errors = np.array(y - np.matmul(L, q))[0:len(Cepheids)]
@@ -25,7 +25,7 @@ def kappa_clipping(kappa: float, Cepheids: pd.DataFrame, Cepheids_Outliers: pd.D
         # print("Errors = %f, Clipping threshold = %f" % (errors[worst], kappa*std))
 
         # re-iterate
-        q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0(Cepheids, SN, galaxies, name, all_text)
+        q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_Cepheids(Cepheids, SN, galaxies, name, all_text)
 
         errors = np.array(y - np.matmul(L, q))[0:len(Cepheids)]
         std = np.std(errors)

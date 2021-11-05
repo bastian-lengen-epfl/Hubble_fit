@@ -6,7 +6,8 @@ from Pipeline import *
 ##############################################################
 
 # Dataframes for data
-Cepheids, SN, SN_Pantheon, galaxies = load_data('./Data')
+Cepheids, SN_Cepheids, galaxies_Cepheids = load_Cepheids('./Data')
+TRGB, SN_TRGB, galaxies_TRGB = load_TRGB('./Data')
 
 # Dataframe for the different simulations
 Hubble = pd.DataFrame(columns=['Sim','q','H_0','chi2','cov','y','L', 'sig_H_0'])
@@ -21,14 +22,27 @@ Save_Cepheids = Cepheids
 
 
 ##############################################################
-######################## Simulations #########################
+######################## CEPHEIDS  ###########################
 ##############################################################
 
 ### Normal simulations -> added scatter = 0
-Hubble, Cepheids, Cepheids_Outliers = multi_run(Hubble, Save_Cepheids, Empty_Outliers,SN, galaxies, 'Normal')
+Hubble, Cepheids, Cepheids_Outliers = multi_run_Cepheids(Hubble, Save_Cepheids, Empty_Outliers, SN_Cepheids, galaxies_Cepheids, 'Normal')
 
 ### Added dispersion -> added dispersion = 0.0682
-Hubble, Cepheids, Cepheids_Outliers = multi_run(Hubble, Save_Cepheids, Empty_Outliers,SN, galaxies, 'Added_Dispersion')
+Hubble, Cepheids, Cepheids_Outliers = multi_run_Cepheids(Hubble, Save_Cepheids, Empty_Outliers, SN_Cepheids, galaxies_Cepheids, 'Added_Dispersion')
 
+
+
+##############################################################
+######################## TRGB  ###########################
+##############################################################
+
+### Just need a single run since there is no outliers rejection
+Hubble = run_TRGB(Hubble,TRGB,SN_TRGB,galaxies_TRGB,)
+
+
+##############################################################
+######################## Final DF  ###########################
+##############################################################
 ### Final Hubble plot
 Hubble_plot(Hubble)

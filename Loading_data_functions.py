@@ -8,7 +8,7 @@ from Usefull_functions import wesenheit
 from Values import *
 
 
-def load_data(data_dir: str = './Data'):
+def load_Cepheids(data_dir: str = './Data'):
     # Create empty Cepheids DataFrame
     Cepheids = pd.DataFrame({'Gal': [], 'logP': [], 'm_W': [], 'sig_m_W': [],\
                              'M/H': [], 'pi': [], 'sig_pi': [], 'V-I': []})
@@ -54,12 +54,23 @@ def load_data(data_dir: str = './Data'):
                             6.03, 3.40, 5.46, 6.35, 3.89, 6.38]) # p.5 Anderson 2019
 
 
-    # Load the data for supernovae m_b - redshift plot (Pantheon)
-    SN_Pantheon = pd.read_csv('%s/Data_Pantheon/SN.txt'%data_dir, sep = ' ')
-    SN_Pantheon = SN_Pantheon.drop(columns=['x1','dx1','color','dcolor','3rdvar','d3rdvar','cov_m_s',\
-                                            'cov_m_c','cov_s_c','set','ra','dec','biascor'])
-
     # list of galaxies
     galaxies = Cepheids.Gal.drop_duplicates().reset_index()['Gal']
 
-    return Cepheids, SN, SN_Pantheon, galaxies
+    return Cepheids, SN, galaxies
+
+def load_SN_pantheon(data_dir: str = './Data'):
+    #  Load the data for supernovae m_b - redshift plot (Pantheon)
+    SN_Pantheon = pd.read_csv('%s/Data_Pantheon/SN.txt' % data_dir, sep=' ')
+    SN_Pantheon = SN_Pantheon.drop(columns=['x1', 'dx1', 'color', 'dcolor', '3rdvar', 'd3rdvar', 'cov_m_s', \
+                                            'cov_m_c', 'cov_s_c', 'set', 'ra', 'dec', 'biascor'])
+    return SN_Pantheon
+
+def load_TRGB(data_dir: str = './Data'):
+    # Import data and split them in two dataframe
+    TRGB = pd.read_csv('%s/Data_Anand2021/SN_TRGB.csv'%data_dir).replace(99999, np.nan)
+    SN = TRGB[['Gal', 'SN', 'm_b', 'sig_m_b', 'A']].iloc[:-1, :]
+    TRGB = TRGB.drop(columns=['SN', 'm_b', 'sig_m_b']).drop_duplicates().reset_index().drop(columns='index')
+    galaxies = TRGB['Gal'].drop_duplicates().reset_index()['Gal']
+
+    return TRGB, SN, galaxies
