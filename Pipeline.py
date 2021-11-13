@@ -16,11 +16,11 @@ def single_run_Cepheids(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame,
     errors = np.array(y - np.matmul(L, q))[0:len(Cepheids)]
     errors_distribution(errors, name)
 
-    return [name, q, H_0, chi2, cov, y, L, sigma_H_0]
+    return [name, q, H_0, chi2, cov, y, L, sigma_H_0, 'C']
 
 def multi_run_Cepheids(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame,\
               SN: pd.DataFrame, galaxies: list, name: str, fig_dir: str = "./Figure"):
-    ######### no outliers, no relativistic corrections
+    ######### no outliers, no relativistic corrections
     print('\n-------------------------------------\n%s\n-------------------------------------' % name)
 
     # Run the routine
@@ -55,7 +55,7 @@ def multi_run_Cepheids(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_O
                           Hubble.loc[Hubble.index[-1], 'q'], galaxies, name, fig_dir)
 
     ######### outliers, RLB,  K-correction
-    name = name + '_Kcorr'
+    name = name + '_K'
     print('\n-------------------------------------\n%s (%i outliers) \n-------------------------------------' % (
     name, len(Cepheids_Outliers)))
 
@@ -70,7 +70,7 @@ def run_TRGB(Hubble: pd. DataFrame ,TRGB: pd.DataFrame, SN: pd.DataFrame, galaxi
     # Run the fit
     print('\n-------------------------------------\nTRGB\n-------------------------------------')
     q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_TRGB(TRGB, SN, galaxies, display_text=True)
-    Hubble.loc[len(Hubble)] = ['TRGB',q, H_0, chi2, cov, y, L, sigma_H_0]
+    Hubble.loc[len(Hubble)] = ['T',q, H_0, chi2, cov, y, L, sigma_H_0, 'T']
     return Hubble
 
 
@@ -89,9 +89,9 @@ def single_run_Both(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, SN_
     errors = np.array(y - np.matmul(L, q))[0:len(Cepheids)]
     errors_distribution(errors, name)
 
-    return [name+'_Cep', q, H_0[0], chi2, cov, y, L, sigma_H_0[0]], \
-           [name+'_TRGB', q, H_0[1], chi2, cov, y, L, sigma_H_0[1]], \
-           [name+'-BOTH', q, H_0[2], chi2, cov, y, L, sigma_H_0[2]],
+    return [name+'_C', q, H_0[0], chi2, cov, y, L, sigma_H_0[0], 'C'], \
+           [name+'_T', q, H_0[1], chi2, cov, y, L, sigma_H_0[1], 'T'], \
+           [name+'_Avg', q, H_0[2], chi2, cov, y, L, sigma_H_0[2], 'A'],
 
 def multi_run_Both(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, \
                    SN_Cepheids: pd.DataFrame, galaxies_Cepheids: list, TRGB: pd.DataFrame, SN_TRGB: pd.DataFrame, \
@@ -146,7 +146,7 @@ def multi_run_Both(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outli
                           Hubble.loc[Hubble.index[-1], 'q'], galaxies_Cepheids, name, fig_dir)
 
     ######### outliers, RLB,  K-correction, no added dispersion
-    name = name + '_Kcorr'
+    name = name + '_K'
     print('\n-------------------------------------\n%s (%i outliers) \n-------------------------------------' % (
         name, len(Cepheids_Outliers)))
 

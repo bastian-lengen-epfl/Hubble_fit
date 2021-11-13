@@ -199,17 +199,35 @@ def plot_global_PL(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, gala
 
 # Hubble plot
 def Hubble_plot(Hubble: pd.DataFrame, fig_dir: str = "./Figure"):
+    # Get the color and marker depending on the category Cepheids/TRGB/Avg
+    category = Hubble['C/T/Avg']
+    color = [None]*len(category)
+    marker = [None]*len(category)
+    for i in range(len(category)):
+        if category[i] == 'C':
+            color[i] = 'tab:blue'
+            marker[i] = 'o'
+        elif category[i] == 'T':
+            color[i] = 'tab:orange'
+            marker[i] = '^'
+        else:
+            color[i] = 'tab:green'
+            marker[i] = 's'
+
+    # Get the name
+    names = list(Hubble['Sim'])+ ['Riess 2021', 'Anand 2021']
     ### Plot Hubble's constant
     fig, ax = plt.subplots()
     fig.set_figheight(10)
     fig.set_figwidth(10)
-    ax.errorbar(Hubble['Sim'], Hubble['H_0'], Hubble['sig_H_0'], marker='.', ms=18, ls='')
-    ax.errorbar(['Riess 2021', 'Anand 2021'], [73.2, 71.5], [1.1,1.8], marker='.', ms=18, c='r', ls='')
+    for i in range(len(Hubble)):
+        ax.errorbar(i, Hubble.loc[i,'H_0'], Hubble.loc[i,'sig_H_0'], marker=marker[i], color=color[i], ms=18, ls='')
+    ax.errorbar([i+1, i+2], [73.2, 71.5], [1.1,1.8], marker='X', ms=18, c='r', ls='')
     ax.set_ylabel('H$_0$ [Mpc]', fontsize=18)
-    names = np.append(Hubble['Sim'], ['Riess 2021', 'Anand 2021'])
-    ax.set_xticklabels(names, rotation=90)
+    ax.set_xticklabels(names, rotation=90, minor=True)
     ax.tick_params(labelsize=10)
     fig.savefig('%s/Hubble.jpg'%fig_dir, dpi=100)
+    print(names)
 
 # SN plot
 def plot_SN(a_b: float, fit_values: list, z_min: float = 0.023, z_max: float = 0.15, fig_dir: str = "./Figure"):

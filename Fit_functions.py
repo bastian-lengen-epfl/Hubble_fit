@@ -104,7 +104,7 @@ def find_H0_Cepheids(Cepheids: pd.DataFrame, SN: pd.DataFrame , galaxies: list, 
             L[i][26] = 1 # MB
 
     ### Create the correlation matrix :
-    if name[:6] == 'Normal':
+    if name[0] == 'N':
         extra_scatter = 0.0 # extra scatter for the hosts cepheids
     else :
         extra_scatter = added_scatter
@@ -312,7 +312,7 @@ def find_H0_Both(Cepheids: pd.DataFrame, SN_Cepheids: pd.DataFrame, galaxies_Cep
             SNt_count = SNt_count + 1
 
     ### Create the correlation matrix :
-    if name[:6] == 'Normal':
+    if name[0] == 'N':
         extra_scatter = 0.0  # extra scatter for the hosts cepheids
     else:
         extra_scatter = added_scatter
@@ -388,5 +388,4 @@ def find_H0_Both(Cepheids: pd.DataFrame, SN_Cepheids: pd.DataFrame, galaxies_Cep
         print('chi2/dof = %f' % (chi2 / dof))
         print('H_0 = %f +/- %f'%(H_0_AVG, sigma_H_0_AVG))
 
-        np.save('tmp.npy', L)
     return q, [H_0_Cep, H_0_TRGB, H_0_AVG], chi2, cov, y, L, [sigma_H_0_Cep, sigma_H_0_TRGB, sigma_H_0_AVG]
