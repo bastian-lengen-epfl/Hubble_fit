@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from Usefull_functions import redshift_magnitude_x
 
 
 # Plot individual PL relation
@@ -97,7 +98,6 @@ def plot_PL(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, galaxies: l
 
     plt.close()
     return
-
 
 # Global plot function
 def plot_global_PL(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, galaxies: list, \
@@ -197,7 +197,6 @@ def plot_global_PL(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, gala
     plt.close()
     return
 
-
 # Hubble plot
 def Hubble_plot(Hubble: pd.DataFrame, fig_dir: str = "./Figure"):
     ### Plot Hubble's constant
@@ -205,12 +204,58 @@ def Hubble_plot(Hubble: pd.DataFrame, fig_dir: str = "./Figure"):
     fig.set_figheight(10)
     fig.set_figwidth(10)
     ax.errorbar(Hubble['Sim'], Hubble['H_0'], Hubble['sig_H_0'], marker='.', ms=18, ls='')
-    xmin, xmax = ax.get_xlim()
-    ax.plot([xmin, xmax], 2 * [73.1], c='r')
-    ax.plot([xmin, xmax], 2 * [73.1 - 1.3], c='r', ls='--')
-    ax.plot([xmin, xmax], 2 * [73.1 + 1.3], c='r', ls='--')
-    ax.set_xlim([xmin, xmax])
+    ax.errorbar(['Riess 2021', 'Anand 2021'], [73.2, 71.5], [1.1,1.8], marker='.', ms=18, c='r', ls='')
     ax.set_ylabel('H$_0$ [Mpc]', fontsize=18)
-    ax.set_xticklabels(Hubble['Sim'], rotation=90)
-    ax.tick_params(labelsize=14)
+    names = np.append(Hubble['Sim'], ['Riess 2021', 'Anand 2021'])
+    ax.set_xticklabels(names, rotation=90)
+    ax.tick_params(labelsize=10)
     fig.savefig('%s/Hubble.jpg'%fig_dir, dpi=100)
+
+# SN plot
+def plot_SN(a_b: float, fit_values: list, z_min: float = 0.023, z_max: float = 0.15, fig_dir: str = "./Figure"):
+    [z, dz, m, dm, z_fit, dz_fit, m_fit, dm_fit] = fit_values
+
+    ### Do the plot
+    fig, ax = plt.subplots(nrows=2, ncols=1, gridspec_kw={'height_ratios': [3, 1]})
+
+    ax[0].plot(redshift_magnitude_x(z), 0.2 * m, marker='.', ms=8, mfc="lime", mec="k", ls="", c="k", lw=3)
+    ax[0].plot(redshift_magnitude_x(z_fit), 0.2 * m_fit, marker='.', ms=8, mfc="r", mec="k", ls="", c="k", lw=3)
+    tmp = ax[0].get_xlim()
+    ax[0].plot(tmp, np.array(tmp) - a_b, 'k', lw=2)  # slope 1 by mean
+    ax[0].set_xlim(tmp)
+    tmp = ax[0].get_ylim()
+    ax[0].plot(redshift_magnitude_x(np.array([z_min, z_min])), tmp, c='k', ls='--', lw=1)
+    ax[0].text(redshift_magnitude_x(z_min) - 0.30, tmp[1] - 0.15, 'z=%f' % z_min)
+    ax[0].plot(redshift_magnitude_x(np.array([z_max, z_max])), tmp, c='k', ls='--', lw=1)
+    ax[0].text(redshift_magnitude_x(z_max) - 0.30, tmp[1] - 0.15, 'z=%f' % z_max)
+    ax[0].set_ylim(tmp)
+    ax[0].tick_params(
+        axis='x',  # changes apply to the x-axis
+        which='both',  # both major and minor ticks are affected
+        bottom=False,  # ticks along the bottom edge are off
+        top=False,  # ticks along the top edge are off
+        labelbottom=False)  # labels along the bottom edge are off
+    ax[0].set_ylabel('0.2m$_b$ [mag]')
+
+    ax[1].plot(redshift_magnitude_x(z), 0.2 * m - (redshift_magnitude_x(z) - a_b), \
+               marker='D', ms=5, mfc="none", mec="limegreen", ls="", c="k", lw=0)
+    ax[1].plot(redshift_magnitude_x(z_fit), 0.2 * m_fit - (redshift_magnitude_x(z_fit) - a_b), \
+               marker='D', ms=5, mfc="none", mec="r", ls="", c="k", lw=0)
+    tmp = [ax[0].get_xlim()[0], ax[0].get_xlim()[1]]
+    ax[1].plot(tmp, [0, 0], c='k', ls='--', lw=3)
+    ax[1].set_xlim(tmp)
+    tmp = ax[1].get_ylim()
+    ax[1].plot(redshift_magnitude_x(np.array([z_min, z_min])), tmp, c='k', ls='--', lw=1)
+    ax[1].plot(redshift_magnitude_x(np.array([z_max, z_max])), tmp, c='k', ls='--', lw=1)
+    ax[1].set_ylim(tmp)
+    ax2 = ax[1].twiny()  # ax1 and ax2 share y-axis
+    ax2.plot(redshift_magnitude_x(z), 0.2 * m - (redshift_magnitude_x(z) - a_b), '.', markersize=0)
+    ax[1].set_xlabel('log{cz[1+0.5(1-q$_0$)z-(1/6)(1-q$_0$-3q$_0^2$+1)z$^2$]}')
+    ax[1].set_ylabel('$\Delta$0.2m$_b$ [mag]')
+
+    fig.subplots_adjust(wspace=0, hspace=0)
+    fig.set_figheight(10)
+    fig.set_figwidth(10)
+    fig.savefig('%s/SN_Pantheon.jpg'%fig_dir, dpi=100)
+
+    return
