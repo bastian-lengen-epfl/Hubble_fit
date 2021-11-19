@@ -48,6 +48,10 @@ Hubble, _, _ = multi_run_Cepheids(Hubble, Save_Cepheids, Empty_Outliers, \
 ### Just need a single run since there is no outliers rejection
 Hubble = run_TRGB(Hubble,TRGB,SN_TRGB,galaxies_TRGB)
 
+### K correction
+TRGB_Kcorr = Kcorr_TRGB(TRGB)
+Hubble = run_TRGB(Hubble, TRGB_Kcorr, SN_TRGB, galaxies_TRGB, Kcorr=True)
+
 
 ##############################################################
 #################### CEPHEIDS + TRGB  ########################

@@ -227,7 +227,6 @@ def Hubble_plot(Hubble: pd.DataFrame, fig_dir: str = "./Figure"):
     ax.set_xticklabels(names, rotation=90, minor=True)
     ax.tick_params(labelsize=10)
     fig.savefig('%s/Hubble.jpg'%fig_dir, dpi=100)
-    print(names)
 
 # SN plot
 def plot_SN(a_b: float, fit_values: list, z_min: float = 0.023, z_max: float = 0.15, fig_dir: str = "./Figure"):

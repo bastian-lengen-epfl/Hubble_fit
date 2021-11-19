@@ -60,19 +60,23 @@ def multi_run_Cepheids(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_O
     name, len(Cepheids_Outliers)))
 
     # Correct the dataset (here m_W) for the k correction
-    Cepheids = Kcorr(Cepheids)
+    Cepheids = Kcorr_Cepheids(Cepheids)
 
     Hubble.loc[len(Hubble)] = single_run_Cepheids(Cepheids, Cepheids_Outliers, SN, galaxies, name, fig_dir)
 
     return Hubble, Cepheids, Cepheids_Outliers
 
-def run_TRGB(Hubble: pd. DataFrame ,TRGB: pd.DataFrame, SN: pd.DataFrame, galaxies: list):
+def run_TRGB(Hubble: pd. DataFrame ,TRGB: pd.DataFrame, SN: pd.DataFrame, galaxies: list, Kcorr: bool=False):
     # Run the fit
-    print('\n-------------------------------------\nTRGB\n-------------------------------------')
-    q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_TRGB(TRGB, SN, galaxies, display_text=True)
-    Hubble.loc[len(Hubble)] = ['T',q, H_0, chi2, cov, y, L, sigma_H_0, 'T']
+    if Kcorr == True :
+        print('\n------------------------------------\nTRGB + K_corr\n------------------------------------')
+        q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_TRGB(TRGB, SN, galaxies, display_text=True)
+        Hubble.loc[len(Hubble)] = ['T', q, H_0, chi2, cov, y, L, sigma_H_0, 'T_Kcorr']
+    else :
+        print('\n-------------------------------------\nTRGB\n-------------------------------------')
+        q, H_0, chi2, cov, y, L, sigma_H_0 = find_H0_TRGB(TRGB, SN, galaxies, display_text=True)
+        Hubble.loc[len(Hubble)] = ['T', q, H_0, chi2, cov, y, L, sigma_H_0, 'T']
     return Hubble
-
 
 def single_run_Both(Cepheids: pd.DataFrame, Cepheids_Outliers: pd.DataFrame, SN_Cepheids: pd.DataFrame,\
                     galaxies_Cepheids: list, name: str, TRGB: pd.DataFrame, SN_TRGB: pd.DataFrame, galaxies_TRGB: list,\
@@ -151,10 +155,11 @@ def multi_run_Both(Hubble: pd. DataFrame, Cepheids: pd.DataFrame, Cepheids_Outli
         name, len(Cepheids_Outliers)))
 
     # Correct the dataset (here m_W) for the k correction
-    Cepheids = Kcorr(Cepheids)
+    Cepheids_Kcorr = Kcorr_Cepheids(Cepheids)
+    TRGB_Kcorr = Kcorr_TRGB(TRGB)
 
-    H0 = single_run_Both(Cepheids, Cepheids_Outliers, SN_Cepheids, galaxies_Cepheids, \
-                         name, TRGB, SN_TRGB, galaxies_TRGB, fig_dir)
+    H0 = single_run_Both(Cepheids_Kcorr, Cepheids_Outliers, SN_Cepheids, galaxies_Cepheids, \
+                         name, TRGB_Kcorr, SN_TRGB, galaxies_TRGB, fig_dir)
     Hubble.loc[len(Hubble)] = H0[0]
     Hubble.loc[len(Hubble)] = H0[1]
     Hubble.loc[len(Hubble)] = H0[2]

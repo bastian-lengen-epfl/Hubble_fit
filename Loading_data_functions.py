@@ -73,48 +73,7 @@ def load_TRGB(data_dir: str = './Data'):
     TRGB = TRGB.drop(columns=['SN', 'm_b', 'sig_m_b']).drop_duplicates().reset_index().drop(columns='index')
     galaxies = TRGB['Gal'].drop_duplicates().reset_index()['Gal']
 
+    TRGB['z_obs'] = 1e-3 * np.array([2.41, 2.96, 0.8, 6.01, 5.45, 6.49, 3.90,\
+                                    5.48, 1.46, 2.06, 6.03, 4.00, 1.49])  #  From NED
+
     return TRGB, SN, galaxies
-
-
-
-
-
-def SNplot(z, m_b):
-
-    ### Do the plot
-    fig, ax = plt.subplots(nrows=2, ncols=1, gridspec_kw={'height_ratios': [3, 1]})
-
-    ax[0].plot(redshift_magnitude_x(z), 0.2 * m_b, marker='.', ms=8, mfc="r", mec="k", ls="", c="k", lw=3)
-    tmp = [ax[0].get_xlim()[0], ax[0].get_xlim()[1]]
-    ax[0].plot(tmp, np.array(tmp) - a_x, 'k', lw=2)  # slope 1 by mean
-    ax[0].set_xlim(tmp)
-    tmp = [ax[0].get_ylim()[0], ax[0].get_ylim()[1]]
-    ax[0].plot(redshift_magnitude_x(np.array([z_min, z_min])), tmp, c='k', ls='--', lw=1)
-    ax[0].text(redshift_magnitude_x(z_min) - 0.30, tmp[1] - 0.15, 'z=%f' % z_min)
-    ax[0].plot(redshift_magnitude_x(np.array([z_max, z_max])), tmp, c='k', ls='--', lw=1)
-    ax[0].text(redshift_magnitude_x(z_max) - 0.30, tmp[1] - 0.15, 'z=%f' % z_max)
-    ax[0].set_ylim(tmp)
-    ax[0].tick_params(
-        axis='x',  # changes apply to the x-axis
-        which='both',  # both major and minor ticks are affected
-        bottom=False,  # ticks along the bottom edge are off
-        top=False,  # ticks along the top edge are off
-        labelbottom=False)  # labels along the bottom edge are off
-    ax[0].set_ylabel('0.2m$_b$ [mag]')
-
-    ax[1].plot(redshift_magnitude_x(z), 0.2 * m_b - (redshift_magnitude_x(z) - a_x), \
-               marker='D', ms=5, mfc="none", mec="k", ls="", c="k", lw=0)
-    tmp = [ax[0].get_xlim()[0], ax[0].get_xlim()[1]]
-    ax[1].plot(tmp, [0, 0], c='k', ls='--', lw=3)
-    ax[1].set_xlim(tmp)
-    ax2 = ax[1].twiny()  # ax1 and ax2 share y-axis
-    ax2.plot(redshift_magnitude_x(z), 0.2 * m_b - (redshift_magnitude_x(z) - a_x), '.', markersize=0)
-    ax[1].set_xlabel('log{cz[1+0.5(1-q$_0$)z-(1/6)(1-q$_0$-3q$_0^2$+1)z$^2$]}')
-    ax[1].set_ylabel('$\Delta$0.2m$_b$ [mag]')
-
-    fig.subplots_adjust(wspace=0, hspace=0)
-    fig.set_figheight(10)
-    fig.set_figwidth(10)
-    fig.savefig("SN_Riess2016.jpg")
-
-    print('Fit : y = x - a_b = x-%f' % a_x)

@@ -59,33 +59,63 @@ def RLB_galaxies_distance(pre_Leavitt_q: np.array, post_Leavitt_q: np.array, gal
 
     return
 
-def Kcorr(Cepheids: pd.DataFrame):
-    # First define the value of k according to the period and redshift
-    def k(logP, z):
-        # Reference points from Anderson 2021
-        z_ref = np.array([0.0019, 0.0056, 0.0098, 0.0172, 0.0245])
+
+# First define the value of k according to the period and redshift
+def k_Cep(logP: np.array, z:np.array, filter: str='W'):
+    # Reference points from Anderson 2021
+    z_ref = np.array([0.0019, 0.0056, 0.0098, 0.0172, 0.0245])
+    if filter == 'W':
         m = np.array([3.48, 2.68, 1.89, 1.07, 0.31]) * 1e-3
         c = np.array([0.51, 1.74, 3.25, 5.96, 8.05]) * 1e-3
-        m_inter, c_inter, k = np.empty(len(z)), np.empty(len(z)), np.empty(len(z))
+    elif filter == 'F555W':
+        m = np.array([-2.84, -8.65, -15.16, -26.85, -38.66]) * 1e-3
+        c = np.array([-1.74, -5.47, -9.48, -15.67, -20.51]) * 1e-3
+    elif filter == 'F814W':
+        m = np.array([-1.02, -3.11, -5.47, -9.40, -12.73]) * 1e-3
+        c = np.array([-0.17, -0.91, -1.79, -2.82, -4.02]) * 1e-3
+    elif filter == 'F160W':
+        m = np.array([-1.18, -3.53, -6.04, -10.10, -14.38]) * 1e-3
+        c = np.array([1.00, 1.93, 3.19, 5.69, 8.28]) * 1e-3
 
-        # Linear interpolation
-        for j in range(len(z)):
-            for i in range(len(z_ref) - 1):
-                if z_ref[i] <= z[j] and z[j] < z_ref[i + 1]:
-                    m_inter[j] = m[i] + (z[j] - z_ref[i]) * (m[i + 1] - m[i]) / (z_ref[i + 1] - z_ref[i])
-                    c_inter[j] = c[i] + (z[j] - z_ref[i]) * (c[i + 1] - c[i]) / (z_ref[i + 1] - z_ref[i])
-                elif z[j] < z_ref[i]:
-                    m_inter[j] = m[0] + (z[j] - z_ref[0]) * (m[1] - m[0]) / (z_ref[1] - z_ref[0])
-                    c_inter[j] = c[0] + (z[j] - z_ref[0]) * (c[1] - c[0]) / (z_ref[1] - z_ref[0])
-                else:
-                    m_inter[j] = m[-2] + (z[j] - z_ref[-2]) * (m[-1] - m[-2]) / (z_ref[-1] - z_ref[-2])
-                    c_inter[j] = c[-2] + (z[j] - z_ref[-2]) * (c[-1] - c[-2]) / (z_ref[-1] - z_ref[-2])
-        return m_inter * logP + c_inter
+    m_inter, c_inter, k = np.empty(len(z)), np.empty(len(z)), np.empty(len(z))
 
+    # Linear interpolation
+    for j in range(len(z)):
+        for i in range(len(z_ref) - 1):
+            if z_ref[i] <= z[j] and z[j] < z_ref[i + 1]:
+                m_inter[j] = m[i] + (z[j] - z_ref[i]) * (m[i + 1] - m[i]) / (z_ref[i + 1] - z_ref[i])
+                c_inter[j] = c[i] + (z[j] - z_ref[i]) * (c[i + 1] - c[i]) / (z_ref[i + 1] - z_ref[i])
+            elif z[j] < z_ref[i]:
+                m_inter[j] = m[0] + (z[j] - z_ref[0]) * (m[1] - m[0]) / (z_ref[1] - z_ref[0])
+                c_inter[j] = c[0] + (z[j] - z_ref[0]) * (c[1] - c[0]) / (z_ref[1] - z_ref[0])
+            else:
+                m_inter[j] = m[-2] + (z[j] - z_ref[-2]) * (m[-1] - m[-2]) / (z_ref[-1] - z_ref[-2])
+                c_inter[j] = c[-2] + (z[j] - z_ref[-2]) * (c[-1] - c[-2]) / (z_ref[-1] - z_ref[-2])
+    return m_inter * logP + c_inter
+
+def k_TRGB(z: np.array, filter: str):
+    # parameters from Anderson 2021
+    if filter == 'F555W':
+        a,b = -0.0012, -4.1162
+    elif filter == 'F814W':
+        a,b = -0.0004, -1.4075
+    elif filter == 'F160W':
+        a,b = 0.0001,-1.6241
+
+    return a+b*z
+
+def Kcorr_Cepheids(Cepheids: pd.DataFrame):
     # Correct the magnitude of the Cepheids for the relativistics effect on k
     Cepheids['m_W'] = Cepheids['m_W'] \
-                      + k(Cepheids['logP'], Cepheids['z_obs']) * Cepheids['z_obs'] * Cepheids['V-I'] \
-                      - 0.105 * Cepheids['z_obs'] * Cepheids['V-I']  # for F99 redshift law
+                    + k_Cep(Cepheids['logP'], Cepheids['z_obs'],'W') * Cepheids['z_obs'] * Cepheids['V-I'] \
+                    - 0.105 * Cepheids['z_obs'] * Cepheids['V-I']  # for F99 redshift law
 
     return Cepheids
 
+def Kcorr_TRGB(TRGB: pd.DataFrame):
+    # Correct the magnitude of the Cepheids for the relativistics effect on k
+    TRGB['m'] = TRGB['m'] \
+              + k_TRGB(TRGB['z_obs'], filter='F814W') * TRGB['z_obs'] * TRGB['V-I'] \
+              - 0.105 * TRGB['z_obs'] * TRGB['V-I']# for F99 redshift law
+
+    return TRGB
