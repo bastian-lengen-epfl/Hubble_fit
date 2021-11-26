@@ -115,7 +115,5 @@ def Kcorr_Cepheids(Cepheids: pd.DataFrame):
 def Kcorr_TRGB(TRGB: pd.DataFrame):
     # Correct the magnitude of the Cepheids for the relativistics effect on k
     TRGB['m'] = TRGB['m'] \
-              + k_TRGB(TRGB['z_obs'], filter='F814W') * TRGB['z_obs'] * TRGB['V-I'] \
-              - 0.105 * TRGB['z_obs'] * TRGB['V-I']# for F99 redshift law
-
+              + k_TRGB(TRGB['z_obs'], filter='F814W') * TRGB['z_obs'] * TRGB['V-I']
     return TRGB

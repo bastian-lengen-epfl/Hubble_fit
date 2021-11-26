@@ -108,7 +108,7 @@ def find_H0_Cepheids(Cepheids: pd.DataFrame, SN: pd.DataFrame , galaxies: list, 
         extra_scatter = 0.0 # extra scatter for the hosts cepheids
     else :
         extra_scatter = added_scatter
-    sigma2_pi = Cepheids[MW_filter]['sig_m_W'] ** 2 \
+    sigma2_pi = (Cepheids[MW_filter]['sig_m_W'] ** 2 + extra_scatter**2) \
                 + (5 / np.log(10) / Cepheids[MW_filter]['pi'] * Cepheids[MW_filter]['sig_pi']) ** 2
     diag_sigma = np.array(sigma2_pi)  # for MW
     diag_sigma = np.append(diag_sigma,
@@ -316,7 +316,7 @@ def find_H0_Both(Cepheids: pd.DataFrame, SN_Cepheids: pd.DataFrame, galaxies_Cep
         extra_scatter = 0.0  # extra scatter for the hosts cepheids
     else:
         extra_scatter = added_scatter
-    sigma2_pi = Cepheids[MW_filter]['sig_m_W'] ** 2 \
+    sigma2_pi = (Cepheids[MW_filter]['sig_m_W'] ** 2 + extra_scatter**2)\
                 + (5 / np.log(10) / Cepheids[MW_filter]['pi'] * Cepheids[MW_filter]['sig_pi']) ** 2
     diag_sigma = np.array(sigma2_pi)  # for MW
     diag_sigma = np.append(diag_sigma,
