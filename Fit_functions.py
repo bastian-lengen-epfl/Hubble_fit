@@ -388,4 +388,5 @@ def find_H0_Both(Cepheids: pd.DataFrame, SN_Cepheids: pd.DataFrame, galaxies_Cep
         print('chi2/dof = %f' % (chi2 / dof))
         print('H_0 = %f +/- %f'%(H_0_AVG, sigma_H_0_AVG))
 
+
     return q, [H_0_Cep, H_0_TRGB, H_0_AVG], chi2, cov, y, L, [sigma_H_0_Cep, sigma_H_0_TRGB, sigma_H_0_AVG]

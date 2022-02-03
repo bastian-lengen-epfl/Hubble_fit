@@ -25,13 +25,13 @@ Save_Cepheids = Cepheids
 ##############################################################
 print("Intercept value from the pantheon sample : ")
 z_min, z_max = 0.023, 0.15
-a_b, fit_values = find_a_b(SN_Pantheon, z_min, z_max, True)
-plot_SN(a_b, fit_values, z_min, z_max, './Figure')
+a_fit, fit_values = find_a_b(SN_Pantheon, z_min, z_max, True)
+plot_SN(a_fit, fit_values, z_min, z_max, './Figure')
 
 ##############################################################
 ######################## CEPHEIDS  ###########################
 ##############################################################
-
+'''
 ### Normal simulations -> added scatter = 0
 Hubble, _, _ = multi_run_Cepheids(Hubble, Save_Cepheids, Empty_Outliers, \
                                                          SN_Cepheids, galaxies_Cepheids, 'N')
@@ -51,6 +51,7 @@ Hubble = run_TRGB(Hubble,TRGB,SN_TRGB,galaxies_TRGB)
 ### K correction
 TRGB_Kcorr = Kcorr_TRGB(TRGB)
 Hubble = run_TRGB(Hubble, TRGB_Kcorr, SN_TRGB, galaxies_TRGB, Kcorr=True)
+'''
 
 
 ##############################################################

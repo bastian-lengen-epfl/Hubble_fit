@@ -1,7 +1,7 @@
 # Fit values used
 R = 0.386               # p.6 Moertsell 2021
-a_b = 0.71273           # p.6 Moertsell 2021
-sigma_a_b = 0.00176     # p.6 Moertsell 2021
+a_b = 0.715840         # 0.71273 +/- 0.00176  for Riess2016  and 0.715840+/-0.001631 for my fit
+sigma_a_b = 0.001631     # idem
 kappa = 2.7
 added_scatter = 0.0682  # 0 or 0.0682, p.6 Moertsell 2021
 

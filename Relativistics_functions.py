@@ -41,7 +41,7 @@ def RLB_galaxies_distance(pre_Leavitt_q: np.array, post_Leavitt_q: np.array, gal
 
     ### plot it
     fig, ax = plt.subplots()
-    fig.set_figheight(10)
+    fig.set_figheight(5)
     fig.set_figwidth(10)
     ax.set_xlabel('d$_0$ [Mpc]', fontsize=18)
     ax.set_ylabel('d$_0$/d$_{obs}$ [Mpc]', fontsize=18)
